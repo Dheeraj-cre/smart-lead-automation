@@ -7,29 +7,20 @@
 //   return response.json();
 // };
 
-import fetch from "node-fetch";
+// services/nationalizeService.js
+import axios from "axios";
 
 export const getNationality = async (name) => {
   try {
-    const response = await fetch(
-      `https://api.nationalize.io?name=${encodeURIComponent(name)}`,
+    const response = await axios.get(
+      "https://api.nationalize.io",
       {
-        method: "GET",
-        headers: {
-          "Accept": "application/json"
-        },
+        params: { name },
         timeout: 5000
       }
     );
 
-    if (!response.ok) {
-      console.error("Nationalize API failed:", response.status);
-      return { country: [] };
-    }
-
-    const data = await response.json();
-    return data;
-
+    return response.data;
   } catch (error) {
     console.error("Nationalize API error:", error.message);
     return { country: [] };
