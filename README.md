@@ -1,16 +1,32 @@
-# React + Vite
+# Smart Lead Automation System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+This project is a full-stack application built as part of the **VR Automations Developer Test**.  
+It simulates a real-world **lead enrichment automation system** where user-submitted names are enriched using a third-party API, processed with business rules, stored in a database, and automatically synced using a background task.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+- **Frontend:** React, CSS
+- **Backend:** Node.js, Express
+- **Database:** MongoDB
+- **External API:** Nationalize.io
+- **Automation:** node-cron
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
+- Batch input of first names
+- Live results table with country, probability, and status
+- Filter leads by status (Verified / To Check)
+- Automated background sync for verified leads
+- Duplicate sync prevention (idempotency)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Setup Instructions
+
+### Frontend Setup
+```bash
+npm install
+npm start
