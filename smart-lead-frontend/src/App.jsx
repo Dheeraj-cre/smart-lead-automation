@@ -1,70 +1,63 @@
-// Import useState hook from React
-// It is used to manage component state
 import { useState } from "react";
 import "./App.css";
 
-// Backend URL from environment variable
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-
-  // Stores the raw input from the textarea (comma-separated names)
   const [names, setNames] = useState("");
-
-  // Stores the processed lead data returned from the backend
   const [leads, setLeads] = useState([]);
-
-  // Stores the selected filter value (All / Verified / To Check)
   const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(false);
 
-  // This function is triggered when the Submit button is clicked
   const submitHandler = async () => {
+    if (!names.trim()) {
+      alert("Please enter at least one name");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const response = await fetch(
-        `${API_URL}/api/leads/process`,
-        {
-          method: "POST",
+      const response = await fetch(`${API_URL}/api/leads/process`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          names: names.split(",").map(n => n.trim())
+        })
+      });
 
-          // Specify that we are sending JSON data
-          headers: { "Content-Type": "application/json" },
-
-          // Convert the comma-separated names into an array
-          body: JSON.stringify({
-            names: names.split(",").map(n => n.trim())
-          })
-        }
-      );
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
 
       const data = await response.json();
       setLeads(data);
 
     } catch (error) {
       console.error("Error submitting leads:", error);
+      alert("Server is waking up. Please try again in a few seconds.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Filter logic for the table
   const filtered =
-    filter === "All"
-      ? leads
-      : leads.filter(l => l.status === filter);
+    filter === "All" ? leads : leads.filter(l => l.status === filter);
 
   return (
     <div className="container">
-
-      {/* Application title */}
       <h2>Smart Lead Automation</h2>
 
-      {/* Textarea for entering names */}
       <textarea
         placeholder="Peter, Aditi, Ravi"
         value={names}
         onChange={(e) => setNames(e.target.value)}
       />
 
-      {/* Action buttons */}
       <div className="controls">
-        <button onClick={submitHandler}>Submit</button>
+        <button onClick={submitHandler} disabled={loading}>
+          {loading ? "Processing..." : "Submit"}
+        </button>
 
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option>All</option>
@@ -73,7 +66,6 @@ function App() {
         </select>
       </div>
 
-      {/* Table to display processed lead data */}
       <table>
         <thead>
           <tr>
@@ -95,7 +87,6 @@ function App() {
           ))}
         </tbody>
       </table>
-
     </div>
   );
 }
