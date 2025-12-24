@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
+// Backend URL from Vite env
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
@@ -8,6 +9,11 @@ function App() {
   const [leads, setLeads] = useState([]);
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(false);
+
+  // ✅ Log API URL once (helps debug localhost vs Render)
+  useEffect(() => {
+    console.log("API URL being used:", API_URL);
+  }, []);
 
   const submitHandler = async () => {
     if (!names.trim()) {
@@ -22,7 +28,10 @@ function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          names: names.split(",").map(n => n.trim())
+          names: names
+            .split(",")
+            .map(n => n.trim())
+            .filter(Boolean)
         })
       });
 
