@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
+import api from "./api/axios";
 import "./App.css";
-
-// Backend URL from Vite env
-const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [names, setNames] = useState("");
@@ -10,9 +8,9 @@ function App() {
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Log API URL once (helps debug localhost vs Render)
+  // Debug once (optional)
   useEffect(() => {
-    console.log("API URL being used:", API_URL);
+    console.log("API URL:", import.meta.env.VITE_API_URL);
   }, []);
 
   const submitHandler = async () => {
@@ -24,27 +22,20 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/leads/process`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          names: names
-            .split(",")
-            .map(n => n.trim())
-            .filter(Boolean)
-        })
+      const res = await api.post("/api/leads/process", {
+        names: names
+          .split(",")
+          .map(n => n.trim())
+          .filter(Boolean)
       });
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+      setLeads(res.data);
+    } catch (err) {
+      if (!err.response) {
+        alert("Server is waking up. Please try again in a few seconds.");
+      } else {
+        alert(err.response.data?.message || "Something went wrong");
       }
-
-      const data = await response.json();
-      setLeads(data);
-
-    } catch (error) {
-      console.error("Error submitting leads:", error);
-      alert("Server is waking up. Please try again in a few seconds.");
     } finally {
       setLoading(false);
     }
