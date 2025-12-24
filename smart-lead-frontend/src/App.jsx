@@ -3,6 +3,9 @@
 import { useState } from "react";
 import "./App.css";
 
+// Backend URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
 
   // Stores the raw input from the textarea (comma-separated names)
@@ -16,28 +19,28 @@ function App() {
 
   // This function is triggered when the Submit button is clicked
   const submitHandler = async () => {
+    try {
+      const response = await fetch(
+        `${API_URL}/api/leads/process`,
+        {
+          method: "POST",
 
-    // Send a POST request to the backend API
-    const response = await fetch(
-      "https://smart-lead-automation-dkcd.onrender.com/api/leads/process",
-      {
-        method: "POST",
+          // Specify that we are sending JSON data
+          headers: { "Content-Type": "application/json" },
 
-        // Specify that we are sending JSON data
-        headers: { "Content-Type": "application/json" },
+          // Convert the comma-separated names into an array
+          body: JSON.stringify({
+            names: names.split(",").map(n => n.trim())
+          })
+        }
+      );
 
-        // Convert the comma-separated names into an array
-        body: JSON.stringify({
-          names: names.split(",").map(n => n.trim())
-        })
-      }
-    );
+      const data = await response.json();
+      setLeads(data);
 
-    // Parse the JSON response from the backend
-    const data = await response.json();
-
-    // Update the leads state with processed results
-    setLeads(data);
+    } catch (error) {
+      console.error("Error submitting leads:", error);
+    }
   };
 
   // Filter logic for the table
@@ -55,6 +58,7 @@ function App() {
       {/* Textarea for entering names */}
       <textarea
         placeholder="Peter, Aditi, Ravi"
+        value={names}
         onChange={(e) => setNames(e.target.value)}
       />
 
@@ -62,7 +66,7 @@ function App() {
       <div className="controls">
         <button onClick={submitHandler}>Submit</button>
 
-        <select onChange={(e) => setFilter(e.target.value)}>
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option>All</option>
           <option>Verified</option>
           <option>To Check</option>
@@ -96,5 +100,4 @@ function App() {
   );
 }
 
-// Export the App component
 export default App;
