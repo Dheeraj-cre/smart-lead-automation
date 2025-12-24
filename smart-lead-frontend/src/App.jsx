@@ -19,7 +19,7 @@ function App() {
 
     // Send a POST request to the backend API
     const response = await fetch(
-      "http://localhost:5000/api/leads/process",
+      "https://smart-lead-automation-dkcd.onrender.com/api/leads/process",
       {
         method: "POST",
 
